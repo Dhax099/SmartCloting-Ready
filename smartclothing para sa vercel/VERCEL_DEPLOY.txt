@@ -1,0 +1,54 @@
+SmartClo — Vercel deployment notes
+==================================
+
+This package is prepared for Vercel's native Flask/Python detection. The Flask
+entry point remains app.py and the existing public/ website files and API routes
+are preserved. No page, API endpoint, SQL schema, or shopping logic was rewritten.
+
+DEPLOY
+------
+1. Extract this ZIP.
+2. Upload the CONTENTS of the folder named "Smartclothing Ready" to a GitHub
+   repository (app.py and requirements.txt should be at the repository root).
+   Do not upload the ZIP itself or a parent folder that nests the project one
+   level too deep.
+3. In Vercel, choose Add New > Project and import that GitHub repository.
+4. Let Vercel detect the Python/Flask app automatically. Do not set public/ as
+   the Output Directory. Deploy to get the generated *.vercel.app URL.
+5. Before testing login/data features, add the environment variables below in
+   Vercel Project Settings > Environment Variables, then redeploy.
+
+REQUIRED FOR DATABASE FEATURES
+------------------------------
+The local XAMPP MySQL database at localhost is not reachable from Vercel. Use a
+hosted MySQL-compatible database and import smartclo.sql into it. Then set:
+  DB_HOST = the hosted database hostname
+  DB_PORT = 3306 (or the port your database provider gives you)
+  DB_NAME = smartclo (or the database name you created)
+  DB_USER = database username
+  DB_PASS = database password
+  SECRET_KEY = a long random private value
+
+Never use localhost for DB_HOST on Vercel unless a database is actually running
+inside the same deployment (it is not in this project). Do not put credentials
+in app.py or commit settings.env / secret_key.txt. Vercel environment variables
+are configured in the Vercel dashboard and apply to the selected environments.
+
+OPTIONAL EMAIL RESET
+--------------------
+If password-reset email is needed, also configure SMTP_HOST, SMTP_PORT,
+SMTP_USER, SMTP_PASSWORD, and optionally SMTP_FROM as Vercel environment
+variables. Never commit email passwords or app passwords to GitHub.
+
+CHECK AFTER DEPLOY
+------------------
+Open the generated Vercel URL. Then check the Vercel deployment/runtime logs if
+any request fails. Test home page, login/register, product browsing, admin
+pages, cart/checkout, and password reset (if SMTP is configured). A page URL
+alone does not mean the database has been connected correctly.
+
+SECURITY
+--------
+The original ZIP contained a .git history folder and local settings/secret files.
+They are excluded from this deployment package. If any real password or token was
+previously committed to a public repository, change/revoke it.
